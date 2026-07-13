@@ -1,0 +1,65 @@
+[
+  {
+    "id": "curwood-castle",
+    "name": "Curwood Castle",
+    "lat": 42.999380,
+    "lng": -84.170100,
+    "category": "Historic Landmark",
+    "description": "Curwood Castle, located in Curwood Castle Park, stands on the banks of the Shiawassee River. It served as the writing studio of James Oliver Curwood, one of America's foremost authors of adventure novels and an early advocate of environmental conservation. Set in Owosso, among one of the richest collections of historic homes and buildings in the Midwest, this replica of a Norman chateau was completed in 1923. The beautiful castle was used by Curwood until his death in 1927.",
+    "photo_url": ""
+  },
+  {
+    "id": "steam-railroading-institute",
+    "name": "Steam Railroading Institute",
+    "lat": 42.994511,
+    "lng": -84.170669,
+    "category": "Museum",
+    "description": "The Steam Railroading Institute is dedicated to educating the public about steam era railroading in Michigan and the Great Lakes Region. This includes the preservation of the skills and technology for maintaining steam locomotives by operating steam era equipment and providing the experience of steam locomotives in actual operation. Situated on the site of the former Ann Arbor Railroad's steam shops and roundhouse in Owosso, the Steam Railroading Institute is open to the public on select days from April to September for visits and tours. Visitors will get a firsthand look at what it takes to restore, maintain, and operate railroading equipment from the golden age of steam.",
+    "photo_url": ""
+  },
+  {
+    "id": "lebowsky-center",
+    "name": "Lebowsky Center",
+    "lat": 42.997492,
+    "lng": -84.169637,
+    "category": "Performing Arts",
+    "description": "The Lebowsky Center for Performing Arts has a rich history that carries on the legacy of Joseph Lebowsky who opened The Capitol Theater in 1926 as a \"boon to the neighborhood.\" From humble beginnings in the 1930s, to the eventual founding of a regular theatre group in the 1950s, over 350 shows have been performed through the stages of our history welcoming actors of all ages. The Lebowsky Center for Performing Arts continues to rebound and grow from the devastating fire in 2007, reopening in 2014. Dedicated to its mission to Educate, Entertain, and Enrich lives by providing a quality performing arts experience, the Lebowsky Center for Performing Arts produces 4 musicals and 2 plays each season, and hosts a variety of other performing artists to expand the cultural offerings to the community and beyond. As a nonprofit organization, the Lebowsky Center for Performing Arts is honored to play a part in the cultural and economic growth of Owosso.",
+    "photo_url": ""
+  },
+  {
+    "id": "hankerd-sportswear-building",
+    "name": "Hankerd Sportswear Building",
+    "lat": 42.998516,
+    "lng": -84.171496,
+    "category": "Local Curiosity",
+    "description": "116 W. Exchange was the home of Hankerd Sportswear for many years. The building is on the tour just because the developer of this app you are enjoying is John Hankerd, the previous owner of this building.",
+    "photo_url": ""
+  },
+  {
+    "id": "owosso-armory",
+    "name": "Owosso Armory",
+    "lat": 42.998506,
+    "lng": -84.173193,
+    "category": "Historic Landmark",
+    "description": "Built in 1915, The Armory has seen thousands of National Guard soldiers on their way to or from service to our country. It has been the site of hundreds of concerts, dances and community events. It has been host to debates, lectures, prize fights, sporting events and weddings. Artists like Grand Funk Railroad, Alice Cooper, Jerry Lee Lewis, Sam the Sham and the Pharaohs, and The Kingsmen have performed here. Other military units that utilized the old armory include the Co. G 33rd Michigan Volunteer Infantry in the late 1800s, and the 24th Michigan Volunteer Infantry in the early 1900s. The cost to construct the building was approximately $30,000, though historical documents differ.",
+    "photo_url": ""
+  },
+  {
+    "id": "blue-star",
+    "name": "Blue Star",
+    "lat": 42.997100,
+    "lng": -84.173400,
+    "category": "Local Curiosity",
+    "description": "Located in the center of town, the Blue Star will only play when someone touches the star.",
+    "photo_url": ""
+  },
+  {
+    "id": "owosso-downtown-historic-district",
+    "name": "Owosso Downtown Historic District",
+    "lat": 42.997300,
+    "lng": -84.172800,
+    "category": "Historic Landmark",
+    "description": "The Owosso Downtown Historic District is roughly bounded by the Shiawassee River and Water, Comstock, Park and Mason streets. The district contains more than 100 buildings, dating primarily from the 1850s to the 1960s. The area has served as Owosso's central business district since the community's establishment in the 1830s and remains today a key business center for the city even though the usual commercial strips have developed on the city's outskirts. The district contains such key historic landmarks as the City Hall, old high school building, the Capitol Theater/Lebowsky Center, and the former National Guard Armory, along with churches, social and fraternal hall buildings, and buildings which have housed much of the downtown's commercial activity over the years. The district's commercial buildings range in style from vernacular Greek Revival and Italianate to Neoclassical and International style. A particularly distinctive feature, and one that separates downtown Owosso from many other small city downtowns around Michigan, is its concentration of late Victorian buildings displaying intricate brickwork.",
+    "photo_url": ""
+  }
+]
