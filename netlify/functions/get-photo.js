@@ -1,4 +1,4 @@
-const { getStore } = require("@netlify/blobs");
+const { getBlobStore: getStore } = require("./_lib/blobStore");
 
 exports.handler = async (event) => {
   const id = event.queryStringParameters && event.queryStringParameters.id;

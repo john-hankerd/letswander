@@ -1,4 +1,4 @@
-const { getStore } = require("@netlify/blobs");
+const { getBlobStore: getStore } = require("./_lib/blobStore");
 const crypto = require("crypto");
 
 const MAX_PHOTO_BYTES = 4 * 1024 * 1024; // 4MB, matches client-side compression target

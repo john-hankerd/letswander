@@ -1,4 +1,4 @@
-const { getStore } = require("@netlify/blobs");
+const { getBlobStore: getStore } = require("./_lib/blobStore");
 const crypto = require("crypto");
 
 exports.handler = async (event) => {
