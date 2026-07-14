@@ -1,10 +1,8 @@
 (function () {
   "use strict";
 
-  // Stage 1: pins come from the bundled sample file. Stage 2 swaps this single
-  // constant to "/.netlify/functions/pins" once the Google Sheet is wired up —
-  // the response shape is identical so nothing else in this file needs to change.
-  var PINS_URL = "assets/sample-pins.json";
+  // Stage 2: pins come from the Netlify function, which reads John's Google Sheet.
+  var PINS_URL = "/.netlify/functions/pins";
   var SAVED_KEY = "letswander:saved";
 
   var map = L.map("map", { zoomControl: false, worldCopyJump: true }).setView([39.8283, -98.5795], 4);
