@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
@@ -22,10 +22,15 @@
     <img src="icons/icon-192.png" alt="" class="brand-mark">
     <span class="brand-name">Let's Wander</span>
   </div>
-  <button id="savedBtn" class="header-btn" aria-label="My saved spots">
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 21s-6.7-4.35-9.3-8.14C.86 10.28 1.4 6.6 4.2 4.9c2.3-1.4 5.1-.7 6.8 1.3.5.6 1.3.6 1.8 0 1.7-2 4.5-2.7 6.8-1.3 2.8 1.7 3.34 5.38 1.5 7.96C18.7 16.65 12 21 12 21z"/></svg>
-    <span class="saved-count" id="savedCount" hidden>0</span>
-  </button>
+  <div class="header-actions">
+    <button id="shareAppBtn" class="header-btn" aria-label="Share this app">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 1 0-3-3c0 .24.04.47.09.7L7.04 9.81C6.5 9.31 5.79 9 5 9a3 3 0 1 0 0 6c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65a2.92 2.92 0 1 0 2.92-2.92z"/></svg>
+    </button>
+    <button id="savedBtn" class="header-btn" aria-label="My saved spots">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 21s-6.7-4.35-9.3-8.14C.86 10.28 1.4 6.6 4.2 4.9c2.3-1.4 5.1-.7 6.8 1.3.5.6 1.3.6 1.8 0 1.7-2 4.5-2.7 6.8-1.3 2.8 1.7 3.34 5.38 1.5 7.96C18.7 16.65 12 21 12 21z"/></svg>
+      <span class="saved-count" id="savedCount" hidden>0</span>
+    </button>
+  </div>
 </header>
 
 <div class="search-bar">
@@ -43,6 +48,8 @@
   <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3A9 9 0 0 0 13 3.06V1h-2v2.06A9 9 0 0 0 3.06 11H1v2h2.06A9 9 0 0 0 11 20.94V23h2v-2.06A9 9 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
 </button>
 
+<button id="suggestBtn" class="fab fab-primary" aria-label="Suggest a spot">+</button>
+
 <!-- Saved spots panel -->
 <div id="savedPanel" class="panel" hidden>
   <div class="panel-header">
@@ -53,10 +60,48 @@
   </div>
   <div id="savedList" class="saved-list"></div>
 </div>
+
+<!-- Suggest a spot panel -->
+<div id="suggestPanel" class="panel" hidden>
+  <div class="panel-header">
+    <h2>Suggest a Spot</h2>
+    <button id="closeSuggestBtn" class="header-btn" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7l-1.41-1.41L9.17 12 2.89 5.71 4.3 4.3l6.29 6.29L16.89 4.3z"/></svg>
+    </button>
+  </div>
+  <form id="suggestForm" class="suggest-form">
+    <label class="form-label" for="suggestName">Name</label>
+    <input id="suggestName" type="text" required maxlength="80" placeholder="What's it called?">
+
+    <label class="form-label" for="suggestCategory">Category</label>
+    <input id="suggestCategory" type="text" maxlength="40" placeholder="e.g. Historic Landmark, Local Curiosity">
+
+    <label class="form-label" for="suggestDescription">Short description</label>
+    <textarea id="suggestDescription" required maxlength="1200" rows="4" placeholder="What makes this spot worth a visit?"></textarea>
+
+    <label class="form-label">Location</label>
+    <p class="form-hint">Drag the map so the pin marks the spot, or use your current location.</p>
+    <div class="mini-map-wrap">
+      <div id="suggestMap"></div>
+      <div class="mini-map-pin" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="#111"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.5 7.5 12.5 7.5 12.5s7.5-7 7.5-12.5C19.5 5.36 16.14 2 12 2zm0 10a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+      </div>
+    </div>
+    <button type="button" id="suggestUseLocationBtn" class="text-btn">Use my current location</button>
+
+    <label class="form-label" for="suggestPhoto">Photo (optional)</label>
+    <input id="suggestPhoto" type="file" accept="image/*">
+    <img id="suggestPhotoPreview" class="photo-preview" hidden alt="">
+
+    <button type="submit" id="suggestSubmitBtn" class="primary-btn">Submit for review</button>
+    <p class="form-hint">Submissions are reviewed before they appear on the map.</p>
+  </form>
+</div>
+
 <div id="panelOverlay" class="panel-overlay" hidden></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

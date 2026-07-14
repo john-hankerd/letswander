@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let's Wander &mdash; Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <img src="../icons/icon-192.png" alt="" class="login-logo">
+  <h1>Let's Wander Admin</h1>
+  <form id="loginForm">
+    <input id="passwordInput" type="password" placeholder="Admin password" autocomplete="current-password" required>
+    <button type="submit">Log in</button>
+    <p id="loginError" class="error-text" hidden></p>
+  </form>
+</div>
+
+<div id="adminScreen" class="admin-screen" hidden>
+  <header class="admin-header">
+    <h1>Pending Suggestions</h1>
+    <button id="refreshBtn">Refresh</button>
+  </header>
+  <div id="pendingList" class="pending-list"></div>
+</div>
+
+<script src="admin.js?v=1"></script>
+</body>
+</html>

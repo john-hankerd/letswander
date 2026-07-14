@@ -309,9 +309,140 @@
 
   document.getElementById("savedBtn").addEventListener("click", openSavedPanel);
   document.getElementById("closeSavedBtn").addEventListener("click", closeSavedPanel);
-  panelOverlay.addEventListener("click", closeSavedPanel);
+  document.getElementById("shareAppBtn").addEventListener("click", shareApp);
 
   updateSavedCount();
+
+  // Suggest a spot
+  var suggestPanel = document.getElementById("suggestPanel");
+  var suggestMap = null;
+  var suggestPhotoData = null; // { base64, type }
+
+  function openSuggestPanel() {
+    suggestPanel.hidden = false;
+    panelOverlay.hidden = false;
+    if (!suggestMap) {
+      suggestMap = L.map("suggestMap", { zoomControl: false, attributionControl: false });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(suggestMap);
+    }
+    var center = map.getCenter();
+    suggestMap.setView([center.lat, center.lng], Math.max(map.getZoom(), 14));
+    setTimeout(function () {
+      suggestMap.invalidateSize();
+    }, 50);
+  }
+
+  function closeSuggestPanel() {
+    suggestPanel.hidden = true;
+    panelOverlay.hidden = true;
+  }
+
+  function closeAnyOpenPanel() {
+    closeSavedPanel();
+    closeSuggestPanel();
+  }
+
+  document.getElementById("suggestBtn").addEventListener("click", openSuggestPanel);
+  document.getElementById("closeSuggestBtn").addEventListener("click", closeSuggestPanel);
+  panelOverlay.addEventListener("click", closeAnyOpenPanel);
+
+  document.getElementById("suggestUseLocationBtn").addEventListener("click", function () {
+    if (!navigator.geolocation) {
+      showToast("Location isn't supported on this browser");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        suggestMap.setView([pos.coords.latitude, pos.coords.longitude], 15);
+      },
+      function () {
+        showToast("Couldn't get your location");
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
+
+  document.getElementById("suggestPhoto").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    var preview = document.getElementById("suggestPhotoPreview");
+    if (!file) {
+      suggestPhotoData = null;
+      preview.hidden = true;
+      return;
+    }
+    var img = new Image();
+    var reader = new FileReader();
+    reader.onload = function () {
+      img.onload = function () {
+        var maxDim = 1600;
+        var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        var canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+        suggestPhotoData = { base64: dataUrl.split(",")[1], type: "image/jpeg" };
+        preview.src = dataUrl;
+        preview.hidden = false;
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("suggestForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var submitBtn = document.getElementById("suggestSubmitBtn");
+    var name = document.getElementById("suggestName").value.trim();
+    var description = document.getElementById("suggestDescription").value.trim();
+    var category = document.getElementById("suggestCategory").value.trim();
+    var center = suggestMap.getCenter();
+
+    if (!name || !description) {
+      showToast("Please fill in a name and description");
+      return;
+    }
+
+    var payload = {
+      name: name,
+      description: description,
+      category: category,
+      lat: center.lat,
+      lng: center.lng
+    };
+    if (suggestPhotoData) {
+      payload.photoBase64 = suggestPhotoData.base64;
+      payload.photoType = suggestPhotoData.type;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+
+    fetch("/.netlify/functions/submit-suggestion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("Submit failed");
+        return res.json();
+      })
+      .then(function () {
+        showToast("Thanks! Your spot is pending review.");
+        e.target.reset();
+        suggestPhotoData = null;
+        document.getElementById("suggestPhotoPreview").hidden = true;
+        closeSuggestPanel();
+      })
+      .catch(function () {
+        showToast("Couldn't submit your spot. Try again.");
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit for review";
+      });
+  });
 
   loadPins().then(function () {
     var params = new URLSearchParams(window.location.search);
