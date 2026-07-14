@@ -199,13 +199,20 @@
     });
   }
 
+  function delay(ms) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+  }
+
   function loadPins() {
+    // retries with backoff handle transient hiccups on flaky mobile connections
     return fetchPins()
       .catch(function () {
-        // one retry after a short delay handles transient network hiccups
-        return new Promise(function (resolve) {
-          setTimeout(resolve, 800);
-        }).then(fetchPins);
+        return delay(800).then(fetchPins);
+      })
+      .catch(function () {
+        return delay(2000).then(fetchPins);
       })
       .then(function (pins) {
         pins.forEach(addPinToMap);
