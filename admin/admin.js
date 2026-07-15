@@ -29,7 +29,7 @@
     loginError.hidden = true;
     var password = document.getElementById("passwordInput").value;
 
-    fetch("/.netlify/functions/admin-login", {
+    fetch("../.netlify/functions/admin-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password: password })
@@ -65,7 +65,7 @@
 
   function loadPending() {
     pendingList.innerHTML = '<p class="empty-state">Loading…</p>';
-    authedFetch("/.netlify/functions/list-pending")
+    authedFetch("../.netlify/functions/list-pending")
       .then(function (res) {
         if (res.status === 401) {
           sessionStorage.removeItem(TOKEN_KEY);
@@ -118,7 +118,7 @@
   }
 
   function resolveSuggestion(id, action, card) {
-    authedFetch("/.netlify/functions/resolve-suggestion", {
+    authedFetch("../.netlify/functions/resolve-suggestion", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: id, action: action })

@@ -2,7 +2,9 @@
   "use strict";
 
   // Stage 2: pins come from the Netlify function, which reads John's Google Sheet.
-  var PINS_URL = "/.netlify/functions/pins";
+  // Relative (not root-absolute) so this still resolves correctly when the
+  // app is served from a subpath, e.g. 40thfloor.com/letswander/.
+  var PINS_URL = "./.netlify/functions/pins";
   var SAVED_KEY = "letswander:saved";
 
   var map = L.map("map", { zoomControl: false, worldCopyJump: true }).setView([39.8283, -98.5795], 4);
@@ -426,7 +428,7 @@
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting…";
 
-    fetch("/.netlify/functions/submit-suggestion", {
+    fetch("./.netlify/functions/submit-suggestion", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)

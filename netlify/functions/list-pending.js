@@ -27,7 +27,8 @@ exports.handler = async (event) => {
       lat: r.lat,
       lng: r.lng,
       submittedAt: r.submittedAt,
-      photoUrl: r.hasPhoto ? "/.netlify/functions/get-photo?id=" + r.id : null
+      // relative to /admin/, the only page that ever renders this
+      photoUrl: r.hasPhoto ? "../.netlify/functions/get-photo?id=" + r.id : null
     }));
 
   return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pending) };

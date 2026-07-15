@@ -44,8 +44,11 @@ exports.handler = async (event) => {
   record.status = "approved";
   await suggestionsStore.setJSON(id, record);
 
+  // Always the stable canonical host, not event.headers.host — this URL gets
+  // stored permanently in the Sheet and must work regardless of which domain
+  // (letswanderusa.com, 40thfloor.com/letswander, or the admin) it's viewed from.
   const photoUrl = record.hasPhoto
-    ? "https://" + event.headers.host + "/.netlify/functions/get-photo?id=" + id
+    ? "https://letswander-app.netlify.app/.netlify/functions/get-photo?id=" + id
     : "";
 
   const copyRow = [
