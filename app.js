@@ -110,6 +110,11 @@
     }
   }
 
+  function openDirections(pin) {
+    var url = "https://www.google.com/maps/dir/?api=1&destination=" + pin.lat + "," + pin.lng;
+    window.open(url, "_blank", "noopener");
+  }
+
   function shareApp() {
     var url = window.location.origin + window.location.pathname;
     if (navigator.share) {
@@ -143,6 +148,7 @@
     html += "<p>" + escapeHtml(pin.description || "") + "</p>";
     html += '<div class="pin-actions">';
     html += '<button data-action="save">' + heartIcon(isSaved(pin.id)) + "<span>" + (isSaved(pin.id) ? "Saved" : "Save") + "</span></button>";
+    html += '<button data-action="directions"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21.71 11.29l-9-9a.996.996 0 0 0-1.41 0l-9 9a.996.996 0 0 0 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9a.996.996 0 0 0 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg><span>Directions</span></button>';
     html += '<button data-action="read"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><span>Read</span></button>';
     html += '<button data-action="share"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 1 0-3-3c0 .24.04.47.09.7L7.04 9.81C6.5 9.31 5.79 9 5 9a3 3 0 1 0 0 6c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65a2.92 2.92 0 1 0 2.92-2.92z"/></svg><span>Share</span></button>';
     html += "</div>";
@@ -153,6 +159,9 @@
       var btn = e.currentTarget;
       btn.innerHTML = heartIcon(filled) + "<span>" + (filled ? "Saved" : "Save") + "</span>";
       btn.classList.toggle("active", filled);
+    });
+    wrap.querySelector('[data-action="directions"]').addEventListener("click", function () {
+      openDirections(pin);
     });
     wrap.querySelector('[data-action="read"]').addEventListener("click", function () {
       speak(pin.name + ". " + (pin.description || ""));
