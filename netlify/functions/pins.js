@@ -83,38 +83,50 @@ function rowsToPins(rows) {
   return pins;
 }
 
-exports.handler = async () => {
-  const headers = {
-    "Content-Type": "application/json",
-    "Cache-Control": "public, max-age=300"
+// The map only needs these fields to place a marker and render a popup
+// header — `description` is the field driving payload size (60-90 words per
+// row), so it's left out of the bulk list and fetched per-pin on demand via
+// ?id=, keeping the list response well under Netlify's 6MB sync-function cap
+// as the dataset grows across states.
+function toLitePin(pin) {
+  return {
+    id: pin.id,
+    name: pin.name,
+    lat: pin.lat,
+    lng: pin.lng,
+    category: pin.category,
+    photo_url: pin.photo_url
   };
+}
 
+// Blobs isn't reliably emulated in every local-dev setup — never let a
+// store problem take down the whole endpoint, just skip the fallback cache.
+function getLastKnownGood() {
+  try {
+    return getStore("pins-cache").get("latest.json", { type: "json" }).catch(() => null);
+  } catch (e) {
+    return Promise.resolve(null);
+  }
+}
+function saveLastKnownGood(pins) {
+  try {
+    return getStore("pins-cache").setJSON("latest.json", pins).catch(() => {});
+  } catch (e) {
+    return Promise.resolve();
+  }
+}
+
+// Fetches (and caches) the full pin records, including description — shared
+// by both the bulk list (stripped down before returning) and the single-pin
+// detail lookup, so a detail request never re-fetches the Google Sheet.
+async function getFullPins() {
   if (warmCache && Date.now() - warmCache.fetchedAt < CACHE_TTL_MS) {
-    return { statusCode: 200, headers, body: JSON.stringify(warmCache.pins) };
+    return warmCache.pins;
   }
 
   const csvUrl = process.env.GOOGLE_SHEET_CSV_URL;
-
-  // Blobs isn't reliably emulated in every local-dev setup — never let a
-  // store problem take down the whole endpoint, just skip the fallback cache.
-  function getLastKnownGood() {
-    try {
-      return getStore("pins-cache").get("latest.json", { type: "json" }).catch(() => null);
-    } catch (e) {
-      return Promise.resolve(null);
-    }
-  }
-  function saveLastKnownGood(pins) {
-    try {
-      return getStore("pins-cache").setJSON("latest.json", pins).catch(() => {});
-    } catch (e) {
-      return Promise.resolve();
-    }
-  }
-
   if (!csvUrl) {
-    const fallback = await getLastKnownGood();
-    return { statusCode: 200, headers, body: JSON.stringify(fallback || []) };
+    return (await getLastKnownGood()) || [];
   }
 
   try {
@@ -126,10 +138,30 @@ exports.handler = async () => {
     warmCache = { pins: pins, fetchedAt: Date.now() };
     await saveLastKnownGood(pins);
 
-    return { statusCode: 200, headers, body: JSON.stringify(pins) };
+    return pins;
   } catch (err) {
     console.error("pins function: falling back to last-known-good —", err.message);
-    const fallback = await getLastKnownGood();
-    return { statusCode: 200, headers, body: JSON.stringify(fallback || []) };
+    return (await getLastKnownGood()) || [];
   }
+}
+
+exports.handler = async (event) => {
+  const headers = {
+    "Content-Type": "application/json",
+    "Cache-Control": "public, max-age=300"
+  };
+
+  const id = event && event.queryStringParameters && event.queryStringParameters.id;
+
+  if (id) {
+    const pins = await getFullPins();
+    const pin = pins.find((p) => p.id === id);
+    if (!pin) {
+      return { statusCode: 404, headers, body: JSON.stringify({ error: "not found" }) };
+    }
+    return { statusCode: 200, headers, body: JSON.stringify(pin) };
+  }
+
+  const pins = await getFullPins();
+  return { statusCode: 200, headers, body: JSON.stringify(pins.map(toLitePin)) };
 };

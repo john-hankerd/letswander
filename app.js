@@ -32,6 +32,36 @@
 
   var pinsById = {};
   var markersById = {};
+  var pinDetailFetches = {}; // id -> in-flight promise, avoids duplicate fetches while a popup is opening
+
+  // The bulk pins list omits `description` to keep the payload small (see
+  // netlify/functions/pins.js). Fetch it lazily per-pin the first time a
+  // popup opens, then cache it on the pin object so re-opening is instant.
+  function ensurePinDetail(pin) {
+    if (pin.description !== undefined) return Promise.resolve(false);
+    if (pinDetailFetches[pin.id]) return pinDetailFetches[pin.id];
+
+    var promise = fetch(PINS_URL + "?id=" + encodeURIComponent(pin.id))
+      .then(function (res) {
+        if (!res.ok) throw new Error("Failed to load pin detail");
+        return res.json();
+      })
+      .then(function (detail) {
+        pin.description = detail.description || "";
+        return true;
+      })
+      .catch(function () {
+        pin.description = ""; // give up rather than leave the popup stuck on "Loading…"
+        return true;
+      })
+      .then(function (changed) {
+        delete pinDetailFetches[pin.id];
+        return changed;
+      });
+
+    pinDetailFetches[pin.id] = promise;
+    return promise;
+  }
 
   function getSaved() {
     try {
@@ -145,7 +175,8 @@
       html += '<span class="pin-category">' + escapeHtml(pin.category) + "</span>";
     }
     html += "<h3>" + escapeHtml(pin.name) + "</h3>";
-    html += "<p>" + escapeHtml(pin.description || "") + "</p>";
+    var descText = pin.description === undefined ? "Loading details…" : (pin.description || "");
+    html += "<p>" + escapeHtml(descText) + "</p>";
     html += '<div class="pin-actions">';
     html += '<button data-action="save">' + heartIcon(isSaved(pin.id)) + "<span>" + (isSaved(pin.id) ? "Saved" : "Save") + "</span></button>";
     html += '<button data-action="directions"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21.71 11.29l-9-9a.996.996 0 0 0-1.41 0l-9 9a.996.996 0 0 0 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9a.996.996 0 0 0 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg><span>Directions</span></button>';
@@ -164,7 +195,9 @@
       openDirections(pin);
     });
     wrap.querySelector('[data-action="read"]').addEventListener("click", function () {
-      speak(pin.name + ". " + (pin.description || ""));
+      ensurePinDetail(pin).then(function () {
+        speak(pin.name + ". " + (pin.description || ""));
+      });
     });
     wrap.querySelector('[data-action="share"]').addEventListener("click", function () {
       sharePin(pin);
@@ -187,6 +220,11 @@
     marker.bindPopup(function () {
       return buildPopupContent(pin);
     }, { maxWidth: 280 });
+    marker.on("popupopen", function () {
+      ensurePinDetail(pin).then(function (changed) {
+        if (changed) marker.setPopupContent(buildPopupContent(pin));
+      });
+    });
     clusterGroup.addLayer(marker);
     pinsById[pin.id] = pin;
     markersById[pin.id] = marker;
